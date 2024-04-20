@@ -1,3 +1,5 @@
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Random;
 
 /**
@@ -110,13 +112,14 @@ public class SequenceAligner {
             cache[0][j] = new Result(score, Direction.LEFT);
         }
 
-        for (int i = 1; i <= x.length(); i++) {
-            for(int j = 1; j <= y.length(); j++) {
-                int score1 = judge.score(x.substring(i - 1), y.substring(j - 1));
-                int score2 = judge.score('_' + x.substring(i), y.substring(j - 1));
-                int score3 = judge.score(x.substring(i - 1), '_' + y.substring(j));
+        for (int i = 0; i < x.length(); i++) {
+            for(int j = 0; j < y.length(); j++) {
+                int score1 = judge.score(x.charAt(i), y.charAt(j));
+                int score2 = judge.score('_', y.charAt(j));
+                int score3 = judge.score(x.charAt(i), '_');
 
-                score1 += cache[i - 1][j - 1].getScore();
+                i++;j++;
+                score1 += cache[i -1][j - 1].getScore();
                 score2 += cache[i - 1][j].getScore();
                 score3 += cache[i][j - 1].getScore();
 
@@ -128,12 +131,14 @@ public class SequenceAligner {
                 if (max == score1) {
                     result = new Result(score, Direction.DIAGONAL);
                 } else if (max == score3) {
-                    result = new Result(score, Direction.UP);
-                } else {
                     result = new Result(score, Direction.LEFT);
+                } else {
+                    result = new Result(score, Direction.UP);
                 }
 
                 cache[i][j] = result;
+                i--;j--;
+
             }
         }
     }
@@ -159,7 +164,43 @@ public class SequenceAligner {
      * and m is the length of y.
      */
     private void traceback() {
-        // delete this line and add your code
+        Result traverse = getResult(x.length(),y.length());
+        StringBuilder X = new StringBuilder();
+        StringBuilder Y = new StringBuilder();
+        int i = x.length();
+        int j = y.length();
+
+        if (i == 0 || j == 0) return;
+
+        while (true) {
+            traverse.markPath();
+            if (traverse.getParent() == Direction.DIAGONAL) {
+                X.append(x.charAt(i - 1));
+                Y.append(y.charAt(j - 1));
+                i--;j--;
+                traverse = getResult(i,j);
+            } else if (traverse.getParent() == Direction.UP) {
+                X.append(x.charAt(i - 1));
+                Y.append(Constants.GAP_CHAR);
+                i--;
+                traverse = getResult(i,j);
+            } else {
+                X.append(Constants.GAP_CHAR);
+                Y.append(y.charAt(j - 1));
+                j--;
+                traverse = getResult(i,j);
+            }
+
+            if (i == 0 && j == 0) {
+                traverse.markPath();
+                break;
+            }
+        }
+        X.reverse();
+        Y.reverse();
+
+        alignedX = X.toString();
+        alignedY = Y.toString();
     }
 
     /**

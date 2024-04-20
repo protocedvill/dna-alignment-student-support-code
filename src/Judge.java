@@ -73,14 +73,14 @@ public class Judge {
     char[] chars1 = s1.toCharArray();
     char[] chars2 = s2.toCharArray();
 
-    System.out.println(chars1);
-    System.out.println(chars2);
+    //System.out.println(chars1);
+    //System.out.println(chars2);
     int score = 0;
     for (int i = 0; i < len; i++) {
       score = score + score(chars1[i],chars2[i]);
     }
 
-    System.out.println(score);
+    //System.out.println(score);
     // do we care about extra characters?
     //score += gap*gapCost;
 
