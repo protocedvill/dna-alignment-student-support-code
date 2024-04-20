@@ -52,20 +52,38 @@ public class Judge {
   }
   
   /**
-   * TODO
-   * 
+   *
+   * modified
    * Returns the score associated with the two characters.
    */
   public int score(char a, char b) {
-    return 0;  // delete this line and add your code
+    if(a == '_' || b == '_') return gapCost;
+    if(a == b) return matchCost;
+    return mismatchCost;
   }
   
   /**
-   * TODO
+   * modified
    * 
    * Returns the score associated with the two strings.
    */
   public int score(String s1, String s2) {
-    return 0;  // delete this line and add your code
+    int len = Math.min(s1.length(),s2.length());
+    int gap = Math.max(s1.length(),s2.length()) - len;
+    char[] chars1 = s1.toCharArray();
+    char[] chars2 = s2.toCharArray();
+
+    System.out.println(chars1);
+    System.out.println(chars2);
+    int score = 0;
+    for (int i = 0; i < len; i++) {
+      score = score + score(chars1[i],chars2[i]);
+    }
+
+    System.out.println(score);
+    // do we care about extra characters?
+    //score += gap*gapCost;
+
+    return score;
   }
 }

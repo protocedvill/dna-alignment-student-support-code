@@ -95,7 +95,47 @@ public class SequenceAligner {
      * operations have the same max score.
      */
     private void fillCache() {
-        // delete this line and add your code
+        cache[0][0] = new Result(0);
+        String numOfSkips = "";
+
+        for (int i = 1; i <= x.length(); i++) {
+            numOfSkips = "_";
+            int score = cache[i-1][0].getScore() + judge.score(numOfSkips,numOfSkips);
+            cache[i][0] = new Result(score, Direction.UP);
+        }
+
+        for (int j = 1; j <= y.length(); j++) {
+            numOfSkips = "_";
+            int score = cache[0][j-1].getScore() + judge.score(numOfSkips,numOfSkips);
+            cache[0][j] = new Result(score, Direction.LEFT);
+        }
+
+        for (int i = 1; i <= x.length(); i++) {
+            for(int j = 1; j <= y.length(); j++) {
+                int score1 = judge.score(x.substring(i - 1), y.substring(j - 1));
+                int score2 = judge.score('_' + x.substring(i), y.substring(j - 1));
+                int score3 = judge.score(x.substring(i - 1), '_' + y.substring(j));
+
+                score1 += cache[i - 1][j - 1].getScore();
+                score2 += cache[i - 1][j].getScore();
+                score3 += cache[i][j - 1].getScore();
+
+                int max = Math.max(score1, Math.max(score2,score3));
+
+                // If best result is a match, then diagonal.
+                int score = max;
+                Result result;
+                if (max == score1) {
+                    result = new Result(score, Direction.DIAGONAL);
+                } else if (max == score3) {
+                    result = new Result(score, Direction.UP);
+                } else {
+                    result = new Result(score, Direction.LEFT);
+                }
+
+                cache[i][j] = result;
+            }
+        }
     }
 
     /**
@@ -104,7 +144,7 @@ public class SequenceAligner {
      * find the result in O(1) time by looking in your cache.
      */
     public Result getResult(int i, int j) {
-        return null;  // delete this line and add your code
+        return cache[i][j];
     }
 
     /**
